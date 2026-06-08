@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Importação da logo
 import logoImg from "../assets/images/Logo.png";
@@ -74,6 +74,34 @@ const StyledHeader = styled.header`
         }
     }
 
+    /* --- NOVOS ESTILOS DO MENU DO USUÁRIO LOGADO (DESKTOP) --- */
+    .user-menu-desktop {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+
+        .greeting {
+            color: #fffde9;
+            font-weight: bold;
+        }
+
+        .logout-button {
+            background-color: transparent;
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+
+            &:hover {
+                background-color: #ff6b6b;
+                color: #fff;
+            }
+        }
+    }
+
     .menu-toggle {
         cursor: pointer;
         font-size: 24px;
@@ -85,7 +113,7 @@ const StyledHeader = styled.header`
     }
 
     @media (max-width: 860px) {
-        .nav-links, .login-button-desktop {
+        .nav-links, .login-button-desktop, .user-menu-desktop {
             display: none;
         }
         .menu-toggle {
@@ -96,6 +124,24 @@ const StyledHeader = styled.header`
 
 // 3. O COMPONENTE RENDERIZADO
 const Header = () => {
+    const navigate = useNavigate();
+    const [usuarioLogado, setUsuarioLogado] = useState(null);
+
+    // Verifica no momento que o cabeçalho carrega se existe usuário salvo
+    useEffect(() => {
+        const usuario = JSON.parse(localStorage.getItem('domus_usuarioAtual'));
+        if (usuario) {
+            setUsuarioLogado(usuario);
+        }
+    }, []);
+
+    // Função para sair da conta
+    const handleLogout = () => {
+        localStorage.removeItem('domus_usuarioAtual');
+        setUsuarioLogado(null);
+        navigate('/login'); // Redireciona para a página de login
+    };
+
     return (
         <StyledHeader>
             <div className="navbar-left">
@@ -114,9 +160,18 @@ const Header = () => {
                     <a href="#ajuda">Ajuda</a>
                 </div>
                 
-                <LoginButton to='/login' className="login-button-desktop">
-                    Entrar
-                </LoginButton>
+                {/* --- RENDERIZAÇÃO CONDICIONAL (DESKTOP) --- */}
+                {usuarioLogado ? (
+                    <div className="user-menu-desktop">
+                        <span className="greeting">Olá, {usuarioLogado.nome.split(' ')[0]}</span>
+                        <Link to="/dashboard" style={{ color: '#fffde9', textDecoration: 'none' }}>Meu Painel</Link>
+                        <button onClick={handleLogout} className="logout-button">Sair</button>
+                    </div>
+                ) : (
+                    <LoginButton to='/login' className="login-button-desktop">
+                        Entrar
+                    </LoginButton>
+                )}
 
                 <div className="menu-toggle" id="menu-toggle">☰</div>
             </nav>
@@ -129,7 +184,16 @@ const Header = () => {
                 <a href="#links">Links úteis</a>
                 <Link to="/favoritos">Favoritos</Link>
                 <a href="#ajuda">Ajuda</a>
-                <div className="login-button"><Link to='/login'>Entrar</Link></div>
+                
+                {/* --- RENDERIZAÇÃO CONDICIONAL (MOBILE) --- */}
+                {usuarioLogado ? (
+                    <>
+                        <Link to="/dashboard" style={{ color: '#0056b3', fontWeight: 'bold' }}>Meu Painel</Link>
+                        <div onClick={handleLogout} style={{ color: '#ff6b6b', cursor: 'pointer', padding: '10px 0' }}>Sair</div>
+                    </>
+                ) : (
+                    <div className="login-button"><Link to='/login'>Entrar</Link></div>
+                )}
             </div>
         </StyledHeader>
     );

@@ -1,157 +1,131 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // <-- useLocation adicionado
 import HeaderMain from "../components/HeaderMain";
 import Footer from "../components/Footer";
-import PropertyCard from "../components/PropertyCardHome";
 
-// Importação correta dos estilos profissionais que acabamos de atualizar
-import {
-  DashboardContainer, Sidebar, SidebarItem, MainContent,
-  HeaderArea, Title, StatsGrid, StatCard, SectionTitle, ActionButton
-} from "../styles/DashboardStyles";
+import ResumoGeral from "../components/dashboard/ResumoGeral";
+import Favoritos from "../components/dashboard/Favoritos";
+import MinhasVisitas from "../components/dashboard/MinhasVisitas";
+import ResumoAnunciante from "../components/dashboard/ResumoAnunciante";
+import MeusAnuncios from "../components/dashboard/MeusAnuncios";
+import MensagensLeads from "../components/dashboard/MensagensLeads";
+import NovoAnuncio from "../components/dashboard/NovoAnuncio";
+import ChatLead from "../components/dashboard/ChatLead";
+import Configuracoes from "../components/dashboard/Configuracoes";
+
+import { DashboardContainer, Sidebar, SidebarItem, MainContent } from "../styles/DashboardStyles";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Lê o estado passado pela navegação
+  
   const [userData, setUserData] = useState(null);
-  const [activeMenu, setActiveMenu] = useState("resumo");
+  
+  // Inicia na aba que veio do "state" ou, se não tiver, no "resumo"
+  const [activeMenu, setActiveMenu] = useState(location.state?.abaAtiva || "resumo");
+  const [chatAtivo, setChatAtivo] = useState(null);
 
-  // Lógica de proteção da rota e sessão local
+  // Monitora se o usuário clicou no botão "Começar agora" enquanto já estava no dashboard
+  useEffect(() => {
+    if (location.state?.abaAtiva) {
+      setActiveMenu(location.state.abaAtiva);
+    }
+  }, [location.state]);
+
+  const [imoveisPlataforma, setImoveisPlataforma] = useState(() => {
+    const imoveisSalvos = JSON.parse(localStorage.getItem('domus_imoveis'));
+    if (imoveisSalvos && imoveisSalvos.length > 0) return imoveisSalvos;
+    
+    return [
+      { id: 1, tipo: "Casa em Condomínio", preco: "R$ 850.000", endereco: "Itapeba", quartos: 4, banheiros: 3, vaga: 2, area: "220m²", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80" },
+      { id: 2, tipo: "Terreno", preco: "R$ 150.000", endereco: "Ponta Negra", quartos: "-", banheiros: "-", vaga: "-", area: "360m²", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=400&q=80" }
+    ];
+  });
+
+  const [leadsGlobais, setLeadsGlobais] = useState(() => {
+    const chatsSalvos = JSON.parse(localStorage.getItem('domus_chats'));
+    if (chatsSalvos && chatsSalvos.length > 0) return chatsSalvos;
+    
+    return [{
+      id: 1,
+      interesse: "Casa em Condomínio - Itapeba",
+      statusVendedor: "Novo",
+      statusComprador: "Lida",
+      mensagens: [
+        { id: 1, autorId: "comprador_teste", nome: "Comprador Teste", texto: "Olá! O imóvel ainda está disponível?", hora: "10:30" }
+      ]
+    }];
+  });
+
   useEffect(() => {
     const usuarioLogado = JSON.parse(localStorage.getItem('domus_usuarioAtual'));
-    
-    if (!usuarioLogado) {
-      navigate('/login'); 
-    } else {
-      setUserData(usuarioLogado);
-    }
+    if (!usuarioLogado) navigate('/login'); 
+    else setUserData(usuarioLogado);
   }, [navigate]);
+
+  useEffect(() => {
+    localStorage.setItem('domus_imoveis', JSON.stringify(imoveisPlataforma));
+  }, [imoveisPlataforma]);
+
+  useEffect(() => {
+    localStorage.setItem('domus_chats', JSON.stringify(leadsGlobais));
+  }, [leadsGlobais]);
 
   const handleLogout = () => {
     localStorage.removeItem('domus_usuarioAtual');
     navigate('/login');
   };
 
-  // Mocks de dados (Simulação de banco de dados)
-  const compradorImoveis = [
-    { id: 1, tipo: "Casa", preco: "R$ 450.000", endereco: "Rua 35, Itaipuaçu", quartos: 3, banheiros: 2, vaga: 2, area: "120m²", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80" },
-    { id: 2, tipo: "Apartamento", preco: "R$ 280.000", endereco: "Centro, Maricá", quartos: 2, banheiros: 1, vaga: 1, area: "65m²", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=400&q=80" }
-  ];
-
-  const meusAnuncios = [
-    { id: 3, tipo: "Terreno", preco: "R$ 150.000", endereco: "Ponta Negra", quartos: "-", banheiros: "-", vaga: "-", area: "360m²", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=400&q=80" }
-  ];
-
   if (!userData) return null; 
+  const isVendedor = userData.tipoUsuario === "vendedor" || userData.tipoUsuario === "anunciante";
 
-  // --- RENDERS CONDICIONAIS (Comprador vs Anunciante) ---
-  
-  const renderCompradorContent = () => (
-    <>
-      <HeaderArea>
-        <Title>Olá, {userData.nome}!</Title>
-      </HeaderArea>
+  const renderConteudoAtivo = () => {
+    if (activeMenu === "chat" && chatAtivo) {
+      return <ChatLead chatAtual={chatAtivo} userData={userData} leadsGlobais={leadsGlobais} setLeadsGlobais={setLeadsGlobais} voltar={() => setActiveMenu("leads")} />;
+    }
+    if (activeMenu === "leads") {
+      return <MensagensLeads userData={userData} leadsGlobais={leadsGlobais} setLeadsGlobais={setLeadsGlobais} abrirChat={(chat) => { setChatAtivo(chat); setActiveMenu("chat"); }} />;
+    }
+    if (activeMenu === "config") return <Configuracoes userData={userData} />;
 
-      <StatsGrid>
-        <StatCard>
-          <h4>Imóveis Favoritos</h4>
-          <p>12</p>
-        </StatCard>
-        <StatCard style={{ borderLeftColor: '#ffc107' }}>
-          <h4>Visitas Agendadas</h4>
-          <p>2</p>
-        </StatCard>
-        <StatCard style={{ borderLeftColor: '#17a2b8' }}>
-          <h4>Propostas Ativas</h4>
-          <p>1</p>
-        </StatCard>
-      </StatsGrid>
-
-      <SectionTitle>Recomendações baseadas nas suas buscas</SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
-        {compradorImoveis.map(imovel => (
-          <PropertyCard key={imovel.id} imovel={imovel} />
-        ))}
-      </div>
-    </>
-  );
-
-  const renderAnuncianteContent = () => (
-    <>
-      <HeaderArea>
-        <Title>Painel do Corretor</Title>
-        <ActionButton onClick={() => alert("Abrir formulário de novo anúncio!")}>
-          + Novo Anúncio
-        </ActionButton>
-      </HeaderArea>
-
-      <StatsGrid>
-        <StatCard style={{ borderLeftColor: '#28a745' }}>
-          <h4>Anúncios Ativos</h4>
-          <p>4</p>
-        </StatCard>
-        <StatCard style={{ borderLeftColor: '#ffc107' }}>
-          <h4>Visualizações na Semana</h4>
-          <p>342</p>
-        </StatCard>
-        <StatCard style={{ borderLeftColor: '#17a2b8' }}>
-          <h4>Novos Contatos</h4>
-          <p>8</p>
-        </StatCard>
-      </StatsGrid>
-
-      <SectionTitle>Meus Imóveis Publicados</SectionTitle>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px' }}>
-        {meusAnuncios.map(imovel => (
-          <PropertyCard key={imovel.id} imovel={imovel} />
-        ))}
-      </div>
-    </>
-  );
+    if (isVendedor) {
+      switch (activeMenu) {
+        case "resumo": return <ResumoAnunciante userData={userData} />;
+        case "anuncios": return <MeusAnuncios setActiveMenu={setActiveMenu} meusImoveis={imoveisPlataforma} />;
+        case "novo_anuncio": return <NovoAnuncio adicionarImovel={(novo) => setImoveisPlataforma([novo, ...imoveisPlataforma])} voltarParaAnuncios={() => setActiveMenu("anuncios")} />;
+        default: return <ResumoAnunciante userData={userData} />;
+      }
+    } else {
+      switch (activeMenu) {
+        case "resumo": return <ResumoGeral userData={userData} recomendacoes={imoveisPlataforma} />;
+        case "favoritos": return <Favoritos imoveisFavoritos={imoveisPlataforma} />;
+        case "visitas": return <MinhasVisitas />;
+        default: return <ResumoGeral userData={userData} recomendacoes={imoveisPlataforma} />;
+      }
+    }
+  };
 
   return (
     <>
       <HeaderMain />
-      {/* Container principal que cria o layout flexbox */}
       <DashboardContainer>
-        
-        {/* BARRA LATERAL (MENU) */}
         <Sidebar>
-          <div style={{ padding: '0 30px 25px', fontSize: '0.8rem', color: '#666', borderBottom: '1px solid #333', marginBottom: '25px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            Domus Laguna / Painel
-          </div>
-          
-          <SidebarItem $active={activeMenu === "resumo"} onClick={() => setActiveMenu("resumo")}>
-            Resumo Geral
-          </SidebarItem>
-          
-          {userData.tipoUsuario === "comprador" ? (
+          <div style={{ padding: '0 30px 25px', fontSize: '0.8rem', color: '#666', borderBottom: '1px solid #333', marginBottom: '25px', textTransform: 'uppercase', letterSpacing: '1px' }}>Painel</div>
+          <SidebarItem $active={activeMenu === "resumo"} onClick={() => setActiveMenu("resumo")}>Resumo Geral</SidebarItem>
+          {isVendedor ? (
+            <SidebarItem $active={activeMenu === "anuncios" || activeMenu === "novo_anuncio"} onClick={() => setActiveMenu("anuncios")}>Meus Anúncios</SidebarItem>
+          ) : (
             <>
               <SidebarItem $active={activeMenu === "favoritos"} onClick={() => setActiveMenu("favoritos")}>Meus Favoritos</SidebarItem>
               <SidebarItem $active={activeMenu === "visitas"} onClick={() => setActiveMenu("visitas")}>Minhas Visitas</SidebarItem>
             </>
-          ) : (
-            <>
-              <SidebarItem $active={activeMenu === "anuncios"} onClick={() => setActiveMenu("anuncios")}>Meus Anúncios</SidebarItem>
-              <SidebarItem $active={activeMenu === "leads"} onClick={() => setActiveMenu("leads")}>Mensagens (Leads)</SidebarItem>
-            </>
           )}
-          
-          <SidebarItem $active={activeMenu === "config"} onClick={() => setActiveMenu("config")}>
-            Configurações
-          </SidebarItem>
-
-          <div style={{ flex: 1 }}></div> {/* Empurra o botão de sair para baixo */}
-          
-          <SidebarItem onClick={handleLogout} style={{ color: '#ff6b6b', marginTop: 'auto', borderLeftColor: 'transparent' }}>
-            Sair da Conta
-          </SidebarItem>
+          <SidebarItem $active={activeMenu === "leads" || activeMenu === "chat"} onClick={() => setActiveMenu("leads")}>Mensagens (Chat)</SidebarItem>
+          <SidebarItem $active={activeMenu === "config"} onClick={() => setActiveMenu("config")}>Configurações</SidebarItem>
+          <div style={{ flex: 1 }}></div>
+          <SidebarItem onClick={handleLogout} style={{ color: '#ff6b6b', marginTop: 'auto', borderLeftColor: 'transparent' }}>Sair</SidebarItem>
         </Sidebar>
-
-        {/* ÁREA PRINCIPAL DE CONTEÚDO */}
-        <MainContent>
-          {userData.tipoUsuario === "comprador" ? renderCompradorContent() : renderAnuncianteContent()}
-        </MainContent>
-
+        <MainContent>{renderConteudoAtivo()}</MainContent>
       </DashboardContainer>
       <Footer />
     </>

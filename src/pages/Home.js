@@ -1,5 +1,4 @@
-import React from "react";
-import styled from "styled-components";
+import React, { useState, useEffect } from "react";
 
 // Importando os componentes isolados
 import HeaderMain from "../components/HeaderMain";
@@ -7,87 +6,86 @@ import Footer from "../components/Footer";
 import HeroSection from "../components/HeroSectionHome";
 import PropertyCard from "../components/PropertyCardHome";
 
-const Main = styled.main`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  background-color: #f8f9fa;
-`;
-
-const Section = styled.section`
-  width: 100%;
-  max-width: 1200px;
-  padding: 60px 20px;
-`;
-
-const SectionTitle = styled.h2`
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 30px;
-  text-align: center;
-`;
-
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 30px;
-`;
-
-const NeighborhoodTag = styled.div`
-  background: #0056b3;
-  color: white;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: opacity 0.3s;
-
-  &:hover {
-    opacity: 0.8;
-  }
-`;
+// Importando os estilos
+import { 
+  Main, Section, FilterSection, SectionTitle, Grid, 
+  TagsGrid, NeighborhoodTag, EmptyMessage 
+} from "../styles/HomeStyles";
 
 const Home = () => {
-  // Mocks de dados (simulando retorno do banco de dados)
-  const destaques = [
+  // Estados para gerenciar a lista de imóveis e o filtro atual
+  const [todosImoveis, setTodosImoveis] = useState([]);
+  const [filtroBairro, setFiltroBairro] = useState("Todos");
+
+  // Mock de dados original (usado como fallback se não houver nada no localStorage)
+  const destaquesMock = [
     { id: 1, tipo: "Casa", preco: "R$ 450.000", endereco: "Rua 35, Itaipuaçu", quartos: 3, banheiros: 2, vaga: 2, area: "120m²", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80" },
     { id: 2, tipo: "Apartamento", preco: "R$ 280.000", endereco: "Centro, Maricá", quartos: 2, banheiros: 1, vaga: 1, area: "65m²", img: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=400&q=80" },
     { id: 3, tipo: "Terreno", preco: "R$ 150.000", endereco: "Ponta Negra", quartos: "-", banheiros: "-", vaga: "-", area: "360m²", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=400&q=80" },
   ];
 
-  const bairrosPopulares = ["Itaipuaçu", "Centro", "Ponta Negra", "Araçatiba", "Inoã", "Cordeirinho"];
+  // Assim que a Home carrega, ela busca os imóveis criados pelo anunciante
+  useEffect(() => {
+    const imoveisSalvos = JSON.parse(localStorage.getItem('domus_imoveis'));
+    if (imoveisSalvos && imoveisSalvos.length > 0) {
+      setTodosImoveis(imoveisSalvos);
+    } else {
+      setTodosImoveis(destaquesMock);
+    }
+  }, []);
+
+  // Lógica de filtragem: Se "Todos" estiver marcado, mostra tudo. Senão, filtra pelo endereço.
+  const imoveisFiltrados = filtroBairro === "Todos" 
+    ? todosImoveis 
+    : todosImoveis.filter(imovel => imovel.endereco.includes(filtroBairro));
+
+  const bairrosPopulares = ["Itaipuaçu", "Centro", "Ponta Negra", "Araçatiba", "Inoã", "Cordeirinho", "Itapeba"];
 
   return (
     <>
       <HeaderMain />
       <Main>
         
-        {/* Componente isolado da Busca */}
         <HeroSection />
 
         <Section>
           <SectionTitle>Imóveis em Destaque</SectionTitle>
-          <Grid>
-            {/* Renderizando o componente isolado do Card usando .map */}
-            {destaques.map((imovel) => (
-              <PropertyCard key={imovel.id} imovel={imovel} />
-            ))}
-          </Grid>
+          
+          {imoveisFiltrados.length === 0 ? (
+            <EmptyMessage>Nenhum imóvel encontrado nesta região.</EmptyMessage>
+          ) : (
+            <Grid>
+              {imoveisFiltrados.map((imovel) => (
+                <PropertyCard key={imovel.id} imovel={imovel} />
+              ))}
+            </Grid>
+          )}
         </Section>
 
-        <Section style={{ backgroundColor: "white", borderRadius: "8px", padding: "40px 20px", marginBottom: "40px" }}>
+        <FilterSection>
           <SectionTitle>Busque pelos bairros mais procurados</SectionTitle>
-          <Grid style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "15px" }}>
+          <TagsGrid>
+            
+            {/* Botão para limpar o filtro */}
+            <NeighborhoodTag 
+              $active={filtroBairro === "Todos"} 
+              onClick={() => setFiltroBairro("Todos")}
+            >
+              Todos
+            </NeighborhoodTag>
+
+            {/* Renderização dos botões de bairro com clique funcionando */}
             {bairrosPopulares.map((bairro) => (
-              <NeighborhoodTag key={bairro}>
+              <NeighborhoodTag 
+                key={bairro}
+                $active={filtroBairro === bairro}
+                onClick={() => setFiltroBairro(bairro)}
+              >
                 {bairro}
               </NeighborhoodTag>
             ))}
-          </Grid>
-        </Section>
+          </TagsGrid>
+        </FilterSection>
 
       </Main>
       <Footer />
