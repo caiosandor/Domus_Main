@@ -7,13 +7,14 @@ import {
 const NovoAnuncio = ({ adicionarImovel, voltarParaAnuncios }) => {
   const [formData, setFormData] = useState({
     tipo: "Casa",
+    status: "venda", // <-- NOVO: Adicionado para aparecer na Home
     preco: "",
-    endereco: "", // Inicia vazio para forçar a seleção no dropdown
+    endereco: "", 
     quartos: "",
     banheiros: "",
     vaga: "",
     area: "",
-    img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=400&q=80" 
+    imagem: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=400&q=80" // <-- CORRIGIDO: nome da propriedade
   });
 
   const [previewImagens, setPreviewImagens] = useState([]);
@@ -22,14 +23,22 @@ const NovoAnuncio = ({ adicionarImovel, voltarParaAnuncios }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     
     if (files.length > 0) {
-      const novasImagensUrls = files.map(file => URL.createObjectURL(file));
-      const todasImagens = [...previewImagens, ...novasImagensUrls];
+      const conversoesBase64 = files.map(file => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(file);
+        });
+      });
+
+      const novasImagensBase64 = await Promise.all(conversoesBase64);
+      const todasImagens = [...previewImagens, ...novasImagensBase64];
       setPreviewImagens(todasImagens);
-      setFormData({ ...formData, img: todasImagens[0] });
+      setFormData({ ...formData, imagem: todasImagens[0] }); // <-- CORRIGIDO
     }
   };
 
@@ -38,9 +47,9 @@ const NovoAnuncio = ({ adicionarImovel, voltarParaAnuncios }) => {
     setPreviewImagens(novasImagens);
     
     if (novasImagens.length > 0) {
-        setFormData({ ...formData, img: novasImagens[0] });
+        setFormData({ ...formData, imagem: novasImagens[0] }); // <-- CORRIGIDO
     } else {
-        setFormData({ ...formData, img: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=400&q=80" });
+        setFormData({ ...formData, imagem: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=400&q=80" }); // <-- CORRIGIDO
     }
   };
 
@@ -49,14 +58,15 @@ const NovoAnuncio = ({ adicionarImovel, voltarParaAnuncios }) => {
     
     const novoImovel = {
       id: Math.floor(Math.random() * 10000),
+      status: formData.status, // <-- NOVO
       tipo: formData.tipo,
       preco: `R$ ${formData.preco}`,
       endereco: formData.endereco,
       quartos: formData.quartos || "-",
       banheiros: formData.banheiros || "-",
-      vaga: formData.vaga || "-",
+      vagas: formData.vaga || "-", // <-- Ajustado para plural (vagas) para bater com a Home
       area: `${formData.area}m²`,
-      img: formData.img 
+      imagem: formData.imagem // <-- CORRIGIDO
     };
 
     adicionarImovel(novoImovel);
@@ -119,6 +129,20 @@ const NovoAnuncio = ({ adicionarImovel, voltarParaAnuncios }) => {
         <SectionTitle>Detalhes do Imóvel</SectionTitle>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
           <FormGroup>
+            <Label>Tipo de Negócio</Label>
+            {/* <-- NOVO: Adicionado select de Status --> */}
+            <select 
+              name="status" 
+              value={formData.status} 
+              onChange={handleChange}
+              style={{ width: '100%', padding: '15px', borderRadius: '8px', border: '1px solid #dcdde1', fontSize: '1rem', backgroundColor: '#f8f9fa' }}
+            >
+              <option value="venda">Venda</option>
+              <option value="aluguel">Aluguel</option>
+            </select>
+          </FormGroup>
+          
+          <FormGroup>
             <Label>Tipo de Imóvel</Label>
             <select 
               name="tipo" 
@@ -132,12 +156,12 @@ const NovoAnuncio = ({ adicionarImovel, voltarParaAnuncios }) => {
               <option value="Comercial">Comercial</option>
             </select>
           </FormGroup>
-
-          <FormGroup>
-            <Label>Preço (R$)</Label>
-            <Input type="text" name="preco" placeholder="Ex: 450.000" required onChange={handleChange} />
-          </FormGroup>
         </div>
+
+        <FormGroup>
+          <Label>Preço (R$)</Label>
+          <Input type="text" name="preco" placeholder="Ex: 450.000 ou 2.500/mês" required onChange={handleChange} />
+        </FormGroup>
 
         <FormGroup>
           <Label>Bairro (Maricá)</Label>
@@ -175,7 +199,7 @@ const NovoAnuncio = ({ adicionarImovel, voltarParaAnuncios }) => {
             <Input type="number" name="vaga" onChange={handleChange} />
           </FormGroup>
           <FormGroup>
-            <Label>Área</Label>
+            <Label>Área (m²)</Label>
             <Input type="number" name="area" placeholder="Ex: 120" required onChange={handleChange} />
           </FormGroup>
         </div>

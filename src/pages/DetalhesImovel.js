@@ -59,10 +59,24 @@ function DetalhesImovel() {
 
   if (!imovel) return <PageContainer><h2>Carregando...</h2></PageContainer>;
 
+  // ==========================================
+  // CORREÇÃO DA IMAGEM AQUI
+  // ==========================================
+  // 1. Pega 'imagem' ou 'foto' (dependendo de como seu formulário salva)
+  let imagemMapeada = imovel.imagem || imovel.foto || 'https://via.placeholder.com/1000x500?text=Sem+Foto';
+  
+  // 2. Se for um caminho local, garante que a barra '/' esteja no começo para não quebrar a rota
+  if (!imagemMapeada.startsWith('http') && !imagemMapeada.startsWith('data:')) {
+    imagemMapeada = imagemMapeada.startsWith('/') ? imagemMapeada : `/${imagemMapeada}`;
+  }
+
   return (
     <PageContainer>
       <BackButton to="/">&larr; Voltar</BackButton>
-      <HeroImage src={imovel.imagem} />
+      
+      {/* Usando a variável corrigida no src */}
+      <HeroImage src={imagemMapeada} />
+      
       <ContentGrid>
         <MainInfo>
           <PropertyType>{imovel.tipo}</PropertyType>

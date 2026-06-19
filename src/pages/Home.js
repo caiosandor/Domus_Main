@@ -1,28 +1,20 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Importante para navegação
+import React, { useState, useEffect } from 'react'; // <-- NOVO: Imports adicionados
+import { useNavigate } from 'react-router-dom'; 
 
-// Importando seus componentes
 import HeroSectionHome from '../components/HeroSectionHome';
 import PropertyCardHome from '../components/PropertyCardHome';
 
-// Importando os estilos
 import {
-  PageWrapper, 
-  SectionWhite, 
-  SectionLightGray, 
-  SectionDark, 
-  SectionHelp,
-  Container, 
-  SectionHeader, 
-  GridCards, 
-  PriceGrid, 
-  PriceCard, 
-  PriceButton,
-  BotaoWhatsApp // Mantive o nome, mas agora é um botão de suporte
+  PageWrapper, SectionWhite, SectionLightGray, SectionDark, SectionHelp,
+  Container, SectionHeader, GridCards, PriceGrid, PriceCard, PriceButton,
+  BotaoWhatsApp 
 } from '../styles/HomeStyles';
 
 function Home() {
-  const navigate = useNavigate(); // Instância para navegar entre rotas
+  const navigate = useNavigate(); 
+  
+  // <-- NOVO: Estado para armazenar a lista completa de imóveis
+  const [listaCompleta, setListaCompleta] = useState([]);
 
   // Dados simulados
   const imoveisDaHome = [
@@ -46,8 +38,18 @@ function Home() {
     }
   ];
 
-  const imoveisVenda = imoveisDaHome.filter(i => i.status === 'venda');
-  const imoveisAluguel = imoveisDaHome.filter(i => i.status === 'aluguel');
+  // <-- NOVO: Efeito que roda ao carregar a página
+  useEffect(() => {
+    // Busca os imóveis criados pelo usuário
+    const imoveisSalvos = JSON.parse(localStorage.getItem('domus_imoveis') || '[]');
+    
+    // Junta os do Mock com os do usuário
+    setListaCompleta([...imoveisDaHome, ...imoveisSalvos]);
+  }, []);
+
+  // <-- NOVO: Filtra usando a lista completa, não mais apenas o Mock
+  const imoveisVenda = listaCompleta.filter(i => i.status === 'venda');
+  const imoveisAluguel = listaCompleta.filter(i => i.status === 'aluguel');
 
   return (
     <PageWrapper>
@@ -106,7 +108,6 @@ function Home() {
             <h2>Ficou com alguma dúvida?</h2>
             <p>Nossa equipe está pronta para te ajudar a encontrar o imóvel ideal.</p>
           </SectionHeader>
-          {/* Aqui está a mudança: redireciona para a rota /suporte */}
           <BotaoWhatsApp onClick={() => navigate('/suporte')}>
             Ver Central de Ajuda
           </BotaoWhatsApp>

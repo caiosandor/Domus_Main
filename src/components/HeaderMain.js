@@ -37,7 +37,9 @@ const HeaderMain = () => {
         <NavItem onClick={() => navigate('/#alugar')}>Alugar</NavItem>
         <NavItem onClick={() => navigate('/#comprar')}>Comprar</NavItem>
         <NavItem onClick={() => navigate('/#precos')}>Preço</NavItem>
-        <NavItem onClick={() => navigate('/#ajuda')}>Ajuda</NavItem>
+        
+        {/* CORREÇÃO: O link agora aponta para a página de suporte */}
+        <NavItem onClick={() => navigate('/suporte')}>Ajuda</NavItem>
 
         {/* Lógica do botão Login/Nome */}
         {usuario ? (
