@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import Footer from "../components/Footer";
+// 1. IMPORTAÇÃO DO FOOTER REMOVIDA DAQUI
 
 import ResumoGeral from "../components/dashboard/ResumoGeral";
 import Favoritos from "../components/dashboard/Favoritos";
-import MinhasVisitas from "../components/dashboard/MinhasVisitas"; // Este será o quadro de solicitações
+import MinhasVisitas from "../components/dashboard/MinhasVisitas"; 
 import ResumoAnunciante from "../components/dashboard/ResumoAnunciante";
 import MeusAnuncios from "../components/dashboard/MeusAnuncios";
 import MensagensLeads from "../components/dashboard/MensagensLeads";
@@ -28,11 +28,9 @@ const Dashboard = () => {
     }
   }, [location.state]);
 
-  // Estados de dados
   const [imoveisPlataforma, setImoveisPlataforma] = useState(() => JSON.parse(localStorage.getItem('domus_imoveis')) || []);
   const [leadsGlobais, setLeadsGlobais] = useState(() => JSON.parse(localStorage.getItem('domus_chats')) || []);
   
-  // Estado para solicitações de visita
   const [visitas, setVisitas] = useState(() => JSON.parse(localStorage.getItem('domus_solicitacoes_visita')) || []);
 
   useEffect(() => {
@@ -62,13 +60,12 @@ const Dashboard = () => {
     }
     if (activeMenu === "config") return <Configuracoes userData={userData} />;
     
-    // ABA DE VISITAS (SOLICITAÇÕES)
     if (activeMenu === "visitas") return <MinhasVisitas visitas={visitas} />;
 
     if (isVendedor) {
       switch (activeMenu) {
         case "resumo": return <ResumoAnunciante userData={userData} />;
-        case "anuncios": return <MeusAnuncios setActiveMenu={setActiveMenu} meusImoveis={imoveisPlataforma} />;
+        case "anuncios": return <MeusAnuncios setActiveMenu={setActiveMenu} meusImoveis={imoveisPlataforma} setMeusImoveis={setImoveisPlataforma} />; // <- Função repassada aqui para o apagar funcionar perfeitamente
         case "novo_anuncio": return <NovoAnuncio adicionarImovel={(novo) => setImoveisPlataforma([novo, ...imoveisPlataforma])} voltarParaAnuncios={() => setActiveMenu("anuncios")} />;
         default: return <ResumoAnunciante userData={userData} />;
       }
@@ -82,30 +79,29 @@ const Dashboard = () => {
   };
 
   return (
-    <>
-      <DashboardContainer>
-        <Sidebar>
-          <div style={{ padding: '0 30px 25px', fontSize: '0.8rem', color: '#666', borderBottom: '1px solid #333', marginBottom: '25px', textTransform: 'uppercase', letterSpacing: '1px' }}>Painel</div>
-          <SidebarItem $active={activeMenu === "resumo"} onClick={() => setActiveMenu("resumo")}>Resumo Geral</SidebarItem>
-          
-          {isVendedor ? (
-            <SidebarItem $active={activeMenu === "anuncios" || activeMenu === "novo_anuncio"} onClick={() => setActiveMenu("anuncios")}>Meus Anúncios</SidebarItem>
-          ) : (
-            <>
-              <SidebarItem $active={activeMenu === "favoritos"} onClick={() => setActiveMenu("favoritos")}>Meus Favoritos</SidebarItem>
-              <SidebarItem $active={activeMenu === "visitas"} onClick={() => setActiveMenu("visitas")}>Minhas Solicitações</SidebarItem>
-            </>
-          )}
-          
-          <SidebarItem $active={activeMenu === "leads" || activeMenu === "chat"} onClick={() => setActiveMenu("leads")}>Mensagens (Chat)</SidebarItem>
-          <SidebarItem $active={activeMenu === "config"} onClick={() => setActiveMenu("config")}>Configurações</SidebarItem>
-          <div style={{ flex: 1 }}></div>
-          <SidebarItem onClick={handleLogout} style={{ color: '#ff6b6b', marginTop: 'auto', borderLeftColor: 'transparent' }}>Sair</SidebarItem>
-        </Sidebar>
-        <MainContent>{renderConteudoAtivo()}</MainContent>
-      </DashboardContainer>
-      <Footer />
-    </>
+    // 2. Fragmentos (<> e </>) removidos, já que agora temos só o DashboardContainer
+    <DashboardContainer>
+      <Sidebar>
+        <div style={{ padding: '0 30px 25px', fontSize: '0.8rem', color: '#666', borderBottom: '1px solid #333', marginBottom: '25px', textTransform: 'uppercase', letterSpacing: '1px' }}>Painel</div>
+        <SidebarItem $active={activeMenu === "resumo"} onClick={() => setActiveMenu("resumo")}>Resumo Geral</SidebarItem>
+        
+        {isVendedor ? (
+          <SidebarItem $active={activeMenu === "anuncios" || activeMenu === "novo_anuncio"} onClick={() => setActiveMenu("anuncios")}>Meus Anúncios</SidebarItem>
+        ) : (
+          <>
+            <SidebarItem $active={activeMenu === "favoritos"} onClick={() => setActiveMenu("favoritos")}>Meus Favoritos</SidebarItem>
+            <SidebarItem $active={activeMenu === "visitas"} onClick={() => setActiveMenu("visitas")}>Minhas Solicitações</SidebarItem>
+          </>
+        )}
+        
+        <SidebarItem $active={activeMenu === "leads" || activeMenu === "chat"} onClick={() => setActiveMenu("leads")}>Mensagens (Chat)</SidebarItem>
+        <SidebarItem $active={activeMenu === "config"} onClick={() => setActiveMenu("config")}>Configurações</SidebarItem>
+        <div style={{ flex: 1 }}></div>
+        <SidebarItem onClick={handleLogout} style={{ color: '#ff6b6b', marginTop: 'auto', borderLeftColor: 'transparent' }}>Sair</SidebarItem>
+      </Sidebar>
+      <MainContent>{renderConteudoAtivo()}</MainContent>
+    </DashboardContainer>
+    // 3. TAG FOOTER REMOVIDA DAQUI
   );
 };
 
