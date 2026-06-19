@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; // <-- useLocation adicionado
-import HeaderMain from "../components/HeaderMain";
+import { useNavigate, useLocation } from "react-router-dom";
 import Footer from "../components/Footer";
 
 import ResumoGeral from "../components/dashboard/ResumoGeral";
 import Favoritos from "../components/dashboard/Favoritos";
-import MinhasVisitas from "../components/dashboard/MinhasVisitas";
+import MinhasVisitas from "../components/dashboard/MinhasVisitas"; // Este será o quadro de solicitações
 import ResumoAnunciante from "../components/dashboard/ResumoAnunciante";
 import MeusAnuncios from "../components/dashboard/MeusAnuncios";
 import MensagensLeads from "../components/dashboard/MensagensLeads";
@@ -17,45 +16,24 @@ import { DashboardContainer, Sidebar, SidebarItem, MainContent } from "../styles
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Lê o estado passado pela navegação
+  const location = useLocation();
   
   const [userData, setUserData] = useState(null);
-  
-  // Inicia na aba que veio do "state" ou, se não tiver, no "resumo"
   const [activeMenu, setActiveMenu] = useState(location.state?.abaAtiva || "resumo");
   const [chatAtivo, setChatAtivo] = useState(null);
 
-  // Monitora se o usuário clicou no botão "Começar agora" enquanto já estava no dashboard
   useEffect(() => {
     if (location.state?.abaAtiva) {
       setActiveMenu(location.state.abaAtiva);
     }
   }, [location.state]);
 
-  const [imoveisPlataforma, setImoveisPlataforma] = useState(() => {
-    const imoveisSalvos = JSON.parse(localStorage.getItem('domus_imoveis'));
-    if (imoveisSalvos && imoveisSalvos.length > 0) return imoveisSalvos;
-    
-    return [
-      { id: 1, tipo: "Casa em Condomínio", preco: "R$ 850.000", endereco: "Itapeba", quartos: 4, banheiros: 3, vaga: 2, area: "220m²", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80" },
-      { id: 2, tipo: "Terreno", preco: "R$ 150.000", endereco: "Ponta Negra", quartos: "-", banheiros: "-", vaga: "-", area: "360m²", img: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=400&q=80" }
-    ];
-  });
-
-  const [leadsGlobais, setLeadsGlobais] = useState(() => {
-    const chatsSalvos = JSON.parse(localStorage.getItem('domus_chats'));
-    if (chatsSalvos && chatsSalvos.length > 0) return chatsSalvos;
-    
-    return [{
-      id: 1,
-      interesse: "Casa em Condomínio - Itapeba",
-      statusVendedor: "Novo",
-      statusComprador: "Lida",
-      mensagens: [
-        { id: 1, autorId: "comprador_teste", nome: "Comprador Teste", texto: "Olá! O imóvel ainda está disponível?", hora: "10:30" }
-      ]
-    }];
-  });
+  // Estados de dados
+  const [imoveisPlataforma, setImoveisPlataforma] = useState(() => JSON.parse(localStorage.getItem('domus_imoveis')) || []);
+  const [leadsGlobais, setLeadsGlobais] = useState(() => JSON.parse(localStorage.getItem('domus_chats')) || []);
+  
+  // Estado para solicitações de visita
+  const [visitas, setVisitas] = useState(() => JSON.parse(localStorage.getItem('domus_solicitacoes_visita')) || []);
 
   useEffect(() => {
     const usuarioLogado = JSON.parse(localStorage.getItem('domus_usuarioAtual'));
@@ -63,13 +41,9 @@ const Dashboard = () => {
     else setUserData(usuarioLogado);
   }, [navigate]);
 
-  useEffect(() => {
-    localStorage.setItem('domus_imoveis', JSON.stringify(imoveisPlataforma));
-  }, [imoveisPlataforma]);
-
-  useEffect(() => {
-    localStorage.setItem('domus_chats', JSON.stringify(leadsGlobais));
-  }, [leadsGlobais]);
+  useEffect(() => { localStorage.setItem('domus_imoveis', JSON.stringify(imoveisPlataforma)); }, [imoveisPlataforma]);
+  useEffect(() => { localStorage.setItem('domus_chats', JSON.stringify(leadsGlobais)); }, [leadsGlobais]);
+  useEffect(() => { localStorage.setItem('domus_solicitacoes_visita', JSON.stringify(visitas)); }, [visitas]);
 
   const handleLogout = () => {
     localStorage.removeItem('domus_usuarioAtual');
@@ -87,6 +61,9 @@ const Dashboard = () => {
       return <MensagensLeads userData={userData} leadsGlobais={leadsGlobais} setLeadsGlobais={setLeadsGlobais} abrirChat={(chat) => { setChatAtivo(chat); setActiveMenu("chat"); }} />;
     }
     if (activeMenu === "config") return <Configuracoes userData={userData} />;
+    
+    // ABA DE VISITAS (SOLICITAÇÕES)
+    if (activeMenu === "visitas") return <MinhasVisitas visitas={visitas} />;
 
     if (isVendedor) {
       switch (activeMenu) {
@@ -99,7 +76,6 @@ const Dashboard = () => {
       switch (activeMenu) {
         case "resumo": return <ResumoGeral userData={userData} recomendacoes={imoveisPlataforma} />;
         case "favoritos": return <Favoritos imoveisFavoritos={imoveisPlataforma} />;
-        case "visitas": return <MinhasVisitas />;
         default: return <ResumoGeral userData={userData} recomendacoes={imoveisPlataforma} />;
       }
     }
@@ -107,19 +83,20 @@ const Dashboard = () => {
 
   return (
     <>
-      <HeaderMain />
       <DashboardContainer>
         <Sidebar>
           <div style={{ padding: '0 30px 25px', fontSize: '0.8rem', color: '#666', borderBottom: '1px solid #333', marginBottom: '25px', textTransform: 'uppercase', letterSpacing: '1px' }}>Painel</div>
           <SidebarItem $active={activeMenu === "resumo"} onClick={() => setActiveMenu("resumo")}>Resumo Geral</SidebarItem>
+          
           {isVendedor ? (
             <SidebarItem $active={activeMenu === "anuncios" || activeMenu === "novo_anuncio"} onClick={() => setActiveMenu("anuncios")}>Meus Anúncios</SidebarItem>
           ) : (
             <>
               <SidebarItem $active={activeMenu === "favoritos"} onClick={() => setActiveMenu("favoritos")}>Meus Favoritos</SidebarItem>
-              <SidebarItem $active={activeMenu === "visitas"} onClick={() => setActiveMenu("visitas")}>Minhas Visitas</SidebarItem>
+              <SidebarItem $active={activeMenu === "visitas"} onClick={() => setActiveMenu("visitas")}>Minhas Solicitações</SidebarItem>
             </>
           )}
+          
           <SidebarItem $active={activeMenu === "leads" || activeMenu === "chat"} onClick={() => setActiveMenu("leads")}>Mensagens (Chat)</SidebarItem>
           <SidebarItem $active={activeMenu === "config"} onClick={() => setActiveMenu("config")}>Configurações</SidebarItem>
           <div style={{ flex: 1 }}></div>

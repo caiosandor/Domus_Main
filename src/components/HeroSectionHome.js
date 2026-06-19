@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Importado para fazer a navegação inteligente
+import { useNavigate } from "react-router-dom";
 
 // Importando os estilos isolados
 import {
@@ -14,26 +14,23 @@ const HeroSection = () => {
   const [activeTab, setActiveTab] = useState("comprar");
   
   // Estados da busca
-  const [propertyType, setPropertyType] = useState("");
+  const [propertyType, setPropertyType] = useState("Casa"); // Valor padrão Casa
   const [searchQuery, setSearchQuery] = useState("");
 
+  // --- LÓGICA DE BUSCA (ATUALIZADA) ---
   const handleSearch = () => {
-    console.log("Buscando por:", { 
-      transacao: activeTab,
-      tipo: propertyType, 
-      busca: searchQuery 
-    });
+    // A busca navega para a página de resultados com os filtros na URL
+    // Exemplo: /resultados?tipo=Casa&local=centro
+    navigate(`/resultados?tipo=${propertyType}&local=${encodeURIComponent(searchQuery)}`);
   };
 
-  // --- NOVA LÓGICA DE REDIRECIONAMENTO ---
+  // --- LÓGICA DE ANÚNCIO ---
   const handleComecarAgora = () => {
     const usuarioLogado = JSON.parse(localStorage.getItem('domus_usuarioAtual'));
 
     if (usuarioLogado && (usuarioLogado.tipoUsuario === 'vendedor' || usuarioLogado.tipoUsuario === 'anunciante')) {
-      // Já está logado e é vendedor -> Direto para criar anúncio no painel
       navigate('/dashboard', { state: { abaAtiva: 'novo_anuncio' } });
     } else {
-      // Não está logado ou é comprador -> Vai para a página de registro
       navigate('/register');
     }
   };
@@ -72,15 +69,14 @@ const HeroSection = () => {
           {(activeTab === "comprar" || activeTab === "alugar") && (
             <>
               <Select value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
-                <option value="">Tipo de Imóvel</option>
-                <option value="casa">Casa</option>
-                <option value="apartamento">Apartamento</option>
-                <option value="terreno">Terreno</option>
-                <option value="comercial">Comercial</option>
+                <option value="Casa">Casa</option>
+                <option value="Apartamento">Apartamento</option>
+                <option value="Terreno">Terreno</option>
+                <option value="Comercial">Comercial</option>
               </Select>
               <Input 
                 type="text" 
-                placeholder="Digite o bairro (ex: Itaipuaçu, Centro...)" 
+                placeholder="Digite o bairro ou local..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -88,7 +84,7 @@ const HeroSection = () => {
             </>
           )}
 
-          {/* Se a aba for Anunciar, muda toda a caixa branca */}
+          {/* Se a aba for Anunciar */}
           {activeTab === "anunciar" && (
             <>
               <AnnounceMessage>
@@ -96,7 +92,7 @@ const HeroSection = () => {
                 <p>Anuncie seu imóvel no Domus Laguna e alcance milhares de interessados na região de Maricá.</p>
               </AnnounceMessage>
               <div style={{ width: '100%', maxWidth: '200px' }}>
-                <Button fullWidth style={{ backgroundColor: "#28a745" }} onClick={handleComecarAgora}>
+                <Button style={{ backgroundColor: "#28a745" }} onClick={handleComecarAgora}>
                   Começar agora
                 </Button>
               </div>

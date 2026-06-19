@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../components/HeaderMain";
-import Footer from "../components/Footer";
 
-// Importando os estilos isolados
+// Importando apenas os estilos
 import { 
   PageContainer, Card, Title, Form, 
   Input, Checkdiv, SubmitButton, RegisterLink 
@@ -25,23 +23,18 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const usuariosSalvos = JSON.parse(localStorage.getItem('domus_usuarios')) || [];
-
     const usuarioEncontrado = usuariosSalvos.find(
       user => user.email === email && user.senha === senha
     );
 
     if (usuarioEncontrado) {
-      // Cria a sessão ativa
       localStorage.setItem('domus_usuarioAtual', JSON.stringify(usuarioEncontrado));
-      
       if (lembrarEmail) {
         localStorage.setItem('userEmail', email);
       } else {
         localStorage.removeItem('userEmail');
       }
-
       navigate('/dashboard');
     } else {
       alert("E-mail ou senha incorretos! Tente novamente.");
@@ -49,49 +42,46 @@ const Login = () => {
   };
 
   return (
-    <>
-      <Header />
-      <PageContainer>
-        <Card>
-          <Title>Acesse sua conta</Title>
-          <Form onSubmit={handleSubmit}>
-            <Input 
-              type="email" 
-              placeholder="E-mail" 
-              value={email} 
-              onChange={e => setEmail(e.target.value)} 
-              autoComplete="email" 
-              required 
+    // Removi as tags <Header /> e <Footer /> daqui!
+    <PageContainer>
+      <Card>
+        <Title>Acesse sua conta</Title>
+        <Form onSubmit={handleSubmit}>
+          <Input 
+            type="email" 
+            placeholder="E-mail" 
+            value={email} 
+            onChange={e => setEmail(e.target.value)} 
+            autoComplete="email" 
+            required 
+          />
+          <Input 
+            type="password" 
+            placeholder="Senha" 
+            value={senha} 
+            onChange={e => setSenha(e.target.value)} 
+            autoComplete="current-password" 
+            required 
+          />
+          
+          <Checkdiv>
+            <input 
+              type="checkbox" 
+              id="lembrarEmail" 
+              checked={lembrarEmail} 
+              onChange={(e) => setLembrarEmail(e.target.checked)} 
             />
-            <Input 
-              type="password" 
-              placeholder="Senha" 
-              value={senha} 
-              onChange={e => setSenha(e.target.value)} 
-              autoComplete="current-password" 
-              required 
-            />
-            
-            <Checkdiv>
-              <input 
-                type="checkbox" 
-                id="lembrarEmail" 
-                checked={lembrarEmail} 
-                onChange={(e) => setLembrarEmail(e.target.checked)} 
-              />
-              <label htmlFor="lembrarEmail">Lembrar meu e-mail</label>
-            </Checkdiv>
-            
-            <SubmitButton type="submit">Entrar</SubmitButton>
-          </Form>
+            <label htmlFor="lembrarEmail">Lembrar meu e-mail</label>
+          </Checkdiv>
+          
+          <SubmitButton type="submit">Entrar</SubmitButton>
+        </Form>
 
-          <RegisterLink>
-            Não possui conta? <Link to="/register">Cadastre-se</Link>
-          </RegisterLink>
-        </Card>
-      </PageContainer>
-      <Footer />
-    </>
+        <RegisterLink>
+          Não possui conta? <Link to="/register">Cadastre-se</Link>
+        </RegisterLink>
+      </Card>
+    </PageContainer>
   );
 };
 

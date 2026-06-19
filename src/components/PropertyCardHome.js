@@ -1,8 +1,15 @@
 import React from "react";
 import styled from "styled-components";
+import { Link } from "react-router-dom"; // 1. Importamos o Link do React Router
 
 // --- ESTILOS ---
-const Card = styled.div`
+// 2. Mudamos de styled.div para styled(Link). 
+// Isso transforma o card inteiro em um link clicável sem quebrar o visual.
+const Card = styled(Link)`
+  display: block; /* Mantém o comportamento de bloco que a div tinha */
+  text-decoration: none; /* Remove aquele sublinhado azul padrão de links */
+  color: inherit; /* Garante que os textos não fiquem azuis de link */
+  
   background: white;
   border-radius: 8px;
   overflow: hidden;
@@ -64,8 +71,12 @@ const PropertyCard = (props) => {
   // Trava de segurança: se não vier nada, ele esconde o card em vez de quebrar o site
   if (!dados) return null;
 
+  // Pegamos o ID do imóvel vindo dos dados. Se não tiver ID ainda, usamos '1' como fallback para testes
+  const idDoImovel = dados.id || 1;
+
   return (
-    <Card>
+    // 3. Adicionamos a propriedade "to", que aponta para a rota que criamos no App.js
+    <Card to={`/imovel/${idDoImovel}`}>
       {/* Busca "img" ou "image" para nunca dar erro de undefined */}
       <CardImage src={dados.img || dados.image} alt={dados.tipo || "Imóvel"} />
       
