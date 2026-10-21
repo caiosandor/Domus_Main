@@ -41,6 +41,14 @@ const HeaderMain = () => {
         {/* CORREÇÃO: O link agora aponta para a página de suporte */}
         <NavItem onClick={() => navigate('/suporte')}>Ajuda</NavItem>
 
+        {/* NOVO LINK GAMIFICAÇÃO */}
+        <NavItem 
+          onClick={() => navigate('/avaliar-imovel')}
+          style={{ color: '#ff6b6b', fontWeight: 'bold' }}
+        >
+          Avaliar Imóvel
+        </NavItem>
+
         {/* Lógica do botão Login/Nome */}
         {usuario ? (
           <>

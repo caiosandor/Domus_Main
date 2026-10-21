@@ -18,6 +18,9 @@ import SuccessPlano from './pages/SuccessPlano';
 import Support from './pages/Support';
 import Resultados from './pages/Resultados';
 
+// Simulador Gamificado
+import AvaliacaoStepper from './components/AvaliacaoGamificada/AvaliacaoStepper';
+
 function App() {
   return (
     <>
@@ -36,6 +39,9 @@ function App() {
           <Route path="/sucesso-assinatura/:plano" element={<SuccessPlano />} />
           <Route path="/suporte" element={<Support />} />
           <Route path="/resultados" element={<Resultados />} />
+          
+          {/* Nova Rota para o Simulador */}
+          <Route path="/avaliar-imovel" element={<AvaliacaoStepper />} />
         </Routes>
         
         <Footer />
@@ -44,5 +50,4 @@ function App() {
   );
 }
 
-// ESTA LINHA É A MAIS IMPORTANTE E ESTAVA FALTANDO!
 export default App;
