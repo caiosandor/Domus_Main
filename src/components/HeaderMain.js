@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
-  HeaderContainer, LogoArea, NavMenu, NavItem, LoginButton 
+  HeaderContainer, LogoArea, NavMenu, NavItem, LoginButton, HamburgerIcon 
 } from '../styles/HeaderStyles';
 
 const HeaderMain = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [usuario, setUsuario] = useState(null);
+  
+  const [menuAberto, setMenuAberto] = useState(false);
 
   useEffect(() => {
     const usuarioSalvo = localStorage.getItem('domus_usuarioAtual');
@@ -16,6 +18,10 @@ const HeaderMain = () => {
     } else {
       setUsuario(null);
     }
+  }, [location]);
+
+  useEffect(() => {
+    setMenuAberto(false);
   }, [location]);
 
   const handleLogout = () => {
@@ -31,17 +37,19 @@ const HeaderMain = () => {
         <h1>Domus Laguna</h1>
       </LogoArea>
 
-      <NavMenu>
-        {/* Links sempre visíveis */}
+      <HamburgerIcon onClick={() => setMenuAberto(!menuAberto)}>
+        {menuAberto ? '✖' : '☰'}
+      </HamburgerIcon>
+
+      {/* mantem o html antigo */}
+      <NavMenu isOpen={menuAberto}>
         <NavItem onClick={() => navigate('/')}>Início</NavItem>
         <NavItem onClick={() => navigate('/#alugar')}>Alugar</NavItem>
         <NavItem onClick={() => navigate('/#comprar')}>Comprar</NavItem>
         <NavItem onClick={() => navigate('/#precos')}>Preço</NavItem>
         
-        {/* CORREÇÃO: O link agora aponta para a página de suporte */}
         <NavItem onClick={() => navigate('/suporte')}>Ajuda</NavItem>
 
-        {/* NOVO LINK GAMIFICAÇÃO */}
         <NavItem 
           onClick={() => navigate('/avaliar-imovel')}
           style={{ color: '#ff6b6b', fontWeight: 'bold' }}
@@ -49,7 +57,6 @@ const HeaderMain = () => {
           Avaliar Imóvel
         </NavItem>
 
-        {/* Lógica do botão Login/Nome */}
         {usuario ? (
           <>
             <NavItem onClick={() => navigate('/dashboard')}>

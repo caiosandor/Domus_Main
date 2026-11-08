@@ -24,10 +24,36 @@ export const LogoArea = styled(Link)`
   h1 { margin: 0; font-size: 1.5rem; }
 `;
 
+export const HamburgerIcon = styled.div`
+  display: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  user-select: none;
+  margin-left: auto;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
 export const NavMenu = styled.nav`
   display: flex;
   gap: 20px;
   align-items: center;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #1a1a1a;
+    padding: 20px 0;
+    gap: 15px;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.5);
+    display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
+  }
 `;
 
 export const NavItem = styled.button`
@@ -52,4 +78,9 @@ export const LoginButton = styled.button`
   margin-left: 15px;
   transition: background-color 0.2s;
   &:hover { opacity: 0.9; }
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    width: 80%;
+  }
 `;
