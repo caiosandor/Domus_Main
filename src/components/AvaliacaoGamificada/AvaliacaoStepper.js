@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react';
 
-// --- DADOS MOCKADOS (Agora com arrays de imagens e Dicas de Especialista) ---
+// --- DADOS MOCKADOS (Fotos 100% coerentes com as tags e com a mesma arquitetura por casa) ---
 const imoveisMock = [
   { 
     id: 1, bairro: 'Ponta Negra', tipo: 'Casa de Luxo', quartos: 4, piscina: true, area: 350, 
     imagens: [
-      'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80', // Fachada moderna
-      'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=800&q=80', // Vista mar
-      'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=800&q=80'  // Interior premium
+      'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80', // Fachada mansão
+      'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?auto=format&fit=crop&w=800&q=80'  // Deck de madeira com Vista para o Mar
     ], 
     valorReal: 1100000, opcoes: [950000, 1100000, 1250000, 1500000], 
     destaques: ['Vista para o Mar 🌊', 'Acabamento Premium', 'Energia Solar ⚡'],
-    dica: 'Dica: Imóveis de alto padrão com mais de 300m² e vista para o mar em Ponta Negra costumam ultrapassar a marca de 1 Milhão.'
+    dica: 'Dica: Imóveis de alto padrão com mais de 300m² e vista limpa para o mar em Ponta Negra costumam ultrapassar a marca de 1 Milhão.'
   },
   { 
     id: 2, bairro: 'Itaipuaçu', tipo: 'Casa', quartos: 3, piscina: true, area: 180, 
     imagens: [
-      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80', // Fachada
-      'https://images.unsplash.com/photo-1588880331179-bc9b93a8cb65?auto=format&fit=crop&w=800&q=80', // Gourmet/Piscina
-      'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?auto=format&fit=crop&w=800&q=80'  // Pet no quintal
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', // Casa de gramado verde (Pet)
+      'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80'  // Área Gourmet externa
     ], 
     valorReal: 650000, opcoes: [550000, 650000, 750000, 850000], 
     destaques: ['Área Gourmet 🥩', 'Aceita Pet 🐕', 'Terreno 480m²'],
@@ -27,8 +25,8 @@ const imoveisMock = [
   { 
     id: 3, bairro: 'Centro', tipo: 'Apartamento', quartos: 2, piscina: false, area: 75, 
     imagens: [
-      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80', // Sala
-      'https://images.unsplash.com/photo-1502672260266-1c1c24240f57?auto=format&fit=crop&w=800&q=80', // Quarto
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80', // Sala de Ap moderna
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=800&q=80'  // Vista da varanda envidraçada
     ], 
     valorReal: 320000, opcoes: [250000, 280000, 320000, 380000], 
     destaques: ['Varanda Envidraçada', 'Vaga Coberta 🚗', 'Proibido som alto 🔇'],
@@ -37,8 +35,8 @@ const imoveisMock = [
   { 
     id: 4, bairro: 'Cordeirinho', tipo: 'Casa', quartos: 2, piscina: true, area: 110, 
     imagens: [
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', // Fachada
-      'https://images.unsplash.com/photo-1556912172-45b7ee8819d6?auto=format&fit=crop&w=800&q=80', // Cozinha americana
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', // Quintal com piscina
+      'https://images.unsplash.com/photo-1556912172-45b7ee8819d6?auto=format&fit=crop&w=800&q=80'  // Cozinha Americana ampla
     ], 
     valorReal: 420000, opcoes: [350000, 420000, 480000, 550000], 
     destaques: ['Cozinha Americana 🍳', 'Aceita Financiamento 🏦'],
@@ -47,22 +45,22 @@ const imoveisMock = [
   { 
     id: 5, bairro: 'Inoã', tipo: 'Duplex', quartos: 3, piscina: false, area: 130, 
     imagens: [
-      'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=800&q=80', // Fachada
-      'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80', // Rua condominio
+      'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=800&q=80', // Fachada Duplex
+      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80'  // Interior do Duplex combinando
     ], 
     valorReal: 480000, opcoes: [400000, 480000, 520000, 600000], 
     destaques: ['Condomínio Fechado', 'Segurança 24h 🛡️', 'Parquinho'],
     dica: 'Dica: A segurança do condomínio fechado valoriza o imóvel, deixando um duplex de 3 quartos perto dos R$ 500 mil.'
   },
   { 
-    id: 6, bairro: 'Itaipuaçu', tipo: 'Duplex', quartos: 4, piscina: true, area: 160, 
+    id: 6, bairro: 'São José', tipo: 'Casa', quartos: 2, piscina: false, area: 85, 
     imagens: [
-      'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=800&q=80', // Fachada
-      'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=800&q=80', // Sala
+      'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80', // Casa pequena tijolinhos
+      'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80'  // Interior aconchegante
     ], 
-    valorReal: 720000, opcoes: [620000, 720000, 820000, 900000], 
-    destaques: ['Móveis Planejados', 'Fino Acabamento ✨', 'Rua Asfaltada'],
-    dica: 'Dica: Duplex com 4 quartos, piscina e móveis planejados possui alto valor agregado, passando fácil dos R$ 700 mil.'
+    valorReal: 350000, opcoes: [280000, 350000, 410000, 480000], 
+    destaques: ['Ideal para Casal 👩‍❤️‍👨', 'Jardim de Inverno', 'Comércio Próximo'],
+    dica: 'Dica: Casas compactas (menos de 90m²) ideais para primeira moradia costumam ficar na faixa de R$ 300 mil a R$ 380 mil.'
   }
 ];
 
