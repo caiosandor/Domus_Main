@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
-// --- DADOS MOCKADOS (Com imagens mais coerentes e dados específicos) ---
+// --- DADOS MOCKADOS (Imagens fiéis às descrições) ---
 const imoveisMock = [
-  { id: 1, bairro: 'Ponta Negra', tipo: 'Casa de Luxo', quartos: 5, piscina: true, area: 350, imagem: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=800&q=80', valorReal: 1100000, opcoes: [950000, 1100000, 1250000, 1500000], destaques: ['Vista para o Mar 🌊', 'Acabamento Premium', 'Energia Solar ⚡'] },
-  { id: 2, bairro: 'Itaipuaçu', tipo: 'Casa', quartos: 3, piscina: true, area: 180, imagem: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80', valorReal: 650000, opcoes: [550000, 650000, 750000, 850000], destaques: ['Área Gourmet', 'Aceita Pet 🐕', 'Terreno 480m²'] },
-  { id: 3, bairro: 'Centro', tipo: 'Apartamento', quartos: 2, piscina: false, area: 75, imagem: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80', valorReal: 320000, opcoes: [250000, 280000, 320000, 380000], destaques: ['Varanda Envidraçada', 'Vaga Coberta 🚗', 'Proibido som alto 🔇'] },
-  { id: 4, bairro: 'Inoã', tipo: 'Duplex', quartos: 3, piscina: false, area: 130, imagem: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=800&q=80', valorReal: 480000, opcoes: [400000, 480000, 520000, 600000], destaques: ['Condomínio Fechado', 'Segurança 24h 🛡️', 'Parquinho'] },
-  { id: 5, bairro: 'Cordeirinho', tipo: 'Casa', quartos: 2, piscina: true, area: 110, imagem: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', valorReal: 420000, opcoes: [350000, 420000, 480000, 550000], destaques: ['Cozinha Americana', 'Aceita Financiamento 🏦'] },
-  { id: 6, bairro: 'Itaipuaçu', tipo: 'Duplex', quartos: 4, piscina: true, area: 160, imagem: 'https://images.unsplash.com/photo-1605276374104-162f1f13ce3a?auto=format&fit=crop&w=800&q=80', valorReal: 720000, opcoes: [620000, 720000, 820000, 900000], destaques: ['Espaço Gourmet', 'Fino Acabamento ✨', 'Rua Asfaltada'] },
+  { id: 1, bairro: 'Ponta Negra', tipo: 'Casa de Luxo', quartos: 5, piscina: true, area: 350, imagem: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80', valorReal: 1100000, opcoes: [950000, 1100000, 1250000, 1500000], destaques: ['Vista para o Mar 🌊', 'Acabamento Premium', 'Design Moderno'] },
+  { id: 2, bairro: 'Itaipuaçu', tipo: 'Casa', quartos: 3, piscina: true, area: 180, imagem: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', valorReal: 650000, opcoes: [550000, 650000, 750000, 850000], destaques: ['Área Gourmet 🥩', 'Aceita Pet 🐕', 'Quintal Amplo'] },
+  { id: 3, bairro: 'Centro', tipo: 'Apartamento', quartos: 2, piscina: false, area: 75, imagem: 'https://images.unsplash.com/photo-1502672260266-1c1c24240f57?auto=format&fit=crop&w=800&q=80', valorReal: 320000, opcoes: [250000, 280000, 320000, 380000], destaques: ['Varanda Envidraçada', 'Vaga Coberta 🚗', 'Proibido som alto 🔇'] },
+  { id: 4, bairro: 'Inoã', tipo: 'Duplex', quartos: 3, piscina: false, area: 130, imagem: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80', valorReal: 480000, opcoes: [400000, 480000, 520000, 600000], destaques: ['Condomínio Fechado', 'Segurança 24h 🛡️', 'Parquinho'] },
+  { id: 5, bairro: 'Cordeirinho', tipo: 'Casa', quartos: 2, piscina: true, area: 110, imagem: 'https://images.unsplash.com/photo-1556912172-45b7ee8819d6?auto=format&fit=crop&w=800&q=80', valorReal: 420000, opcoes: [350000, 420000, 480000, 550000], destaques: ['Cozinha Americana 🍳', 'Conceito Aberto'] },
+  { id: 6, bairro: 'Itaipuaçu', tipo: 'Duplex', quartos: 4, piscina: true, area: 160, imagem: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=800&q=80', valorReal: 720000, opcoes: [620000, 720000, 820000, 900000], destaques: ['Móveis Planejados', 'Fino Acabamento ✨', 'Rua Asfaltada'] },
   { id: 7, bairro: 'Centro', tipo: 'Apartamento', quartos: 3, piscina: true, area: 95, imagem: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80', valorReal: 450000, opcoes: [380000, 450000, 520000, 600000], destaques: ['Condomínio Clube 🎾', 'Andar Alto', 'Sol da Manhã ☀️'] },
-  { id: 8, bairro: 'São José', tipo: 'Casa', quartos: 2, piscina: false, area: 85, imagem: 'https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&w=800&q=80', valorReal: 350000, opcoes: [280000, 350000, 410000, 480000], destaques: ['Ideal para Casal 👩‍❤️‍👨', 'Comércio Próximo', 'Aceita Pet 🐈'] }
+  { id: 8, bairro: 'São José', tipo: 'Casa', quartos: 2, piscina: false, area: 85, imagem: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80', valorReal: 350000, opcoes: [280000, 350000, 410000, 480000], destaques: ['Ideal para Casal 👩‍❤️‍👨', 'Jardim de Inverno', 'Aceita Pet 🐈'] }
 ];
 
 export default function AvaliacaoStepper() {
@@ -21,12 +21,8 @@ export default function AvaliacaoStepper() {
   const [imoveisPartida, setImoveisPartida] = useState([]);
   const [rodadaAtual, setRodadaAtual] = useState(1);
   const [acertosPartida, setAcertosPartida] = useState(0);
-  
-  // Novo estado para guardar o histórico de chutes da partida atual
   const [historicoPartida, setHistoricoPartida] = useState([]);
   
-  // Estados de UI
-  const [hoveredBtn, setHoveredBtn] = useState(null);
   const [rating, setRating] = useState(0);
   const [hoveredStar, setHoveredStar] = useState(0);
   const [jogoAvaliado, setJogoAvaliado] = useState(false);
@@ -76,50 +72,37 @@ export default function AvaliacaoStepper() {
     setPasso(2);
   };
 
-  // Função modificada: Registra o chute e já pula para a próxima rodada
   const adivinharValor = (chute) => {
     const imovel = imoveisPartida[rodadaAtual - 1];
     const acertou = chute === imovel.valorReal;
     
-    // Salva o resultado desta rodada para a tabela final
     setHistoricoPartida(prev => [...prev, { imovel, chute, valorReal: imovel.valorReal, acertou }]);
-    
     if (acertou) setAcertosPartida(prev => prev + 1);
 
     if (rodadaAtual < 5) {
       setRodadaAtual(prev => prev + 1);
     } else {
-      // Finaliza o jogo
       const novasStats = {
         partidasJogadas: estatisticasGlobais.partidasJogadas + 1,
         acertosTotais: estatisticasGlobais.acertosTotais + (acertou ? acertosPartida + 1 : acertosPartida)
       };
       setEstatisticasGlobais(novasStats);
       localStorage.setItem('domus_game_stats', JSON.stringify(novasStats));
-      setPasso(3); // Vai direto para o placar
+      setPasso(3);
     }
   };
 
   const formatCurrency = (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(value);
 
   return (
-    <div style={{ 
-      maxWidth: '680px', 
-      margin: '20px auto', 
-      padding: '24px', 
-      fontFamily: '"Inter", "Segoe UI", sans-serif', 
-      backgroundColor: '#ffffff', 
-      borderRadius: '20px', 
-      boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
-      border: '1px solid #E5E7EB'
-    }}>
+    <div className="domus-game-wrapper">
       
-      {/* --- PASSO 0: NICKNAME --- */}
+      {/* PASSO 0: NICKNAME */}
       {passo === 0 && (
-        <div style={{ textAlign: 'center', padding: '20px 10px', animation: 'fadeIn 0.3s' }}>
-          <div style={{ fontSize: '50px', marginBottom: '15px' }}>🏠</div>
-          <h2 style={{ color: '#111827', fontSize: '32px', fontWeight: '900', marginBottom: '10px' }}>Desafio do Preço</h2>
-          <p style={{ color: '#4B5563', fontSize: '18px', marginBottom: '30px' }}>Prove que você conhece o mercado de Maricá!</p>
+        <div className="step-container slide-in">
+          <div className="icon-large">🏠</div>
+          <h2 className="title-text">Desafio do Preço</h2>
+          <p className="subtitle-text">Prove que você conhece o mercado de Maricá!</p>
           
           <input 
             type="text" 
@@ -127,48 +110,38 @@ export default function AvaliacaoStepper() {
             value={nickname}
             onChange={e => setNickname(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && registrarNickname()}
-            style={{ 
-              padding: '16px', width: '100%', boxSizing: 'border-box', borderRadius: '12px', 
-              border: '2px solid #D1D5DB', fontSize: '20px', fontWeight: 'bold', textAlign: 'center', 
-              marginBottom: '24px', outline: 'none', transition: 'all 0.2s',
-            }}
+            className="input-field"
           />
-          <button 
-            onClick={registrarNickname} 
-            style={{ 
-              width: '100%', padding: '18px', backgroundColor: '#3B82F6', color: 'white', border: 'none', 
-              borderRadius: '12px', fontWeight: '800', cursor: 'pointer', fontSize: '20px'
-            }}
-          >
+          <button onClick={registrarNickname} className="btn-primary">
             Entrar no Desafio 🎮
           </button>
         </div>
       )}
 
-      {/* --- PASSO 1: FILTROS E LOBBY --- */}
+      {/* PASSO 1: FILTROS E LOBBY */}
       {passo === 1 && (
-        <div style={{ animation: 'fadeIn 0.3s' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ color: '#111827', margin: 0, fontSize: '26px', fontWeight: '900' }}>Configurar Partida</h2>
-            <div style={{ backgroundColor: '#F3F4F6', padding: '8px 16px', borderRadius: '20px', fontWeight: '700', color: '#4B5563', fontSize: '15px' }}>
+        <div className="step-container slide-in">
+          <div className="header-flex">
+            <h2 className="title-text no-margin">Partida</h2>
+            <div className="badge-info">
               👤 {nickname} | 🏆 {estatisticasGlobais.partidasJogadas} Jogos
             </div>
           </div>
           
-          <div style={{ backgroundColor: '#F9FAFB', padding: '20px', borderRadius: '16px', border: '1px solid #E5E7EB', marginBottom: '20px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <label style={{ fontSize: '15px', fontWeight: '700', color: '#4B5563', marginBottom: '8px' }}>📍 Bairro</label>
-                <select value={filtros.bairro} onChange={e => setFiltros({...filtros, bairro: e.target.value})} style={{ padding: '14px', borderRadius: '10px', border: '1px solid #D1D5DB', fontSize: '16px', fontWeight: '600' }}>
+          <div className="filter-box">
+            <div className="grid-2-cols">
+              <div className="input-group">
+                <label>📍 Bairro</label>
+                <select value={filtros.bairro} onChange={e => setFiltros({...filtros, bairro: e.target.value})}>
                   <option value="">Misturar Tudo</option>
                   <option value="Itaipuaçu">Itaipuaçu</option>
                   <option value="Centro">Centro</option>
                   <option value="Ponta Negra">Ponta Negra</option>
                 </select>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <label style={{ fontSize: '15px', fontWeight: '700', color: '#4B5563', marginBottom: '8px' }}>🏠 Tipo</label>
-                <select value={filtros.tipo} onChange={e => setFiltros({...filtros, tipo: e.target.value})} style={{ padding: '14px', borderRadius: '10px', border: '1px solid #D1D5DB', fontSize: '16px', fontWeight: '600' }}>
+              <div className="input-group">
+                <label>🏠 Tipo</label>
+                <select value={filtros.tipo} onChange={e => setFiltros({...filtros, tipo: e.target.value})}>
                   <option value="">Qualquer tipo</option>
                   <option value="Casa">Casa</option>
                   <option value="Apartamento">Apartamento</option>
@@ -178,72 +151,49 @@ export default function AvaliacaoStepper() {
             </div>
           </div>
 
-          <button 
-            onClick={iniciarJogo} 
-            style={{ 
-              width: '100%', padding: '18px', backgroundColor: '#10B981', color: 'white', border: 'none', 
-              borderRadius: '12px', fontWeight: '900', cursor: 'pointer', fontSize: '20px', transition: 'all 0.2s'
-            }}
-          >
+          <button onClick={iniciarJogo} className="btn-success">
             Iniciar Jogo Rápido ⏳
           </button>
         </div>
       )}
 
-      {/* --- PASSO 2: A RODADA (COMPACTA) --- */}
+      {/* PASSO 2: A RODADA (COMPACTA E RESPONSIVA) */}
       {passo === 2 && imoveisPartida.length > 0 && (
-        <div style={{ animation: 'fadeIn 0.2s' }}>
+        <div className="step-container fade-in">
           
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'center' }}>
-            <span style={{ fontWeight: '800', color: '#4B5563', fontSize: '16px' }}>Rodada {rodadaAtual} / 5</span>
-            <span style={{ fontWeight: '800', color: '#10B981', fontSize: '16px' }}>{acertosPartida} Acertos</span>
+          <div className="progress-header">
+            <span>Rodada {rodadaAtual} / 5</span>
+            <span className="text-success">{acertosPartida} Acertos</span>
           </div>
-          <div style={{ width: '100%', height: '8px', backgroundColor: '#E5E7EB', borderRadius: '4px', marginBottom: '16px' }}>
-            <div style={{ width: `${(rodadaAtual / 5) * 100}%`, height: '100%', backgroundColor: '#3B82F6', transition: 'width 0.3s' }}></div>
+          <div className="progress-bar-bg">
+            <div className="progress-bar-fill" style={{ width: `${(rodadaAtual / 5) * 100}%` }}></div>
           </div>
           
-          <h2 style={{ textAlign: 'center', color: '#111827', margin: '0 0 16px 0', fontSize: '24px', fontWeight: '900' }}>Qual é o valor?</h2>
+          <h2 className="question-text">Qual é o valor?</h2>
           
-          <div style={{ borderRadius: '16px', overflow: 'hidden', border: '2px solid #F3F4F6', marginBottom: '20px' }}>
-            {/* Foto com altura reduzida para caber na tela */}
-            <div style={{ height: '200px', backgroundImage: `url(${imoveisPartida[rodadaAtual - 1].imagem})`, backgroundSize: 'cover', backgroundPosition: 'center', position: 'relative' }}>
-              <div style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: 'rgba(255,255,255,0.95)', padding: '6px 14px', borderRadius: '20px', fontWeight: '800', fontSize: '14px', color: '#111827' }}>
-                📍 {imoveisPartida[rodadaAtual - 1].bairro}
-              </div>
+          <div className="property-card">
+            <div className="property-image" style={{ backgroundImage: `url(${imoveisPartida[rodadaAtual - 1].imagem})` }}>
+              <div className="property-badge">📍 {imoveisPartida[rodadaAtual - 1].bairro}</div>
             </div>
             
-            <div style={{ padding: '16px', backgroundColor: '#ffffff' }}>
-              <h3 style={{ margin: '0 0 10px 0', color: '#111827', fontSize: '22px', fontWeight: '900' }}>{imoveisPartida[rodadaAtual - 1].tipo}</h3>
-              
-              <div style={{ display: 'flex', gap: '12px', color: '#374151', fontSize: '15px', marginBottom: '12px', fontWeight: '700', flexWrap: 'wrap' }}>
+            <div className="property-details">
+              <h3>{imoveisPartida[rodadaAtual - 1].tipo}</h3>
+              <div className="property-specs">
                 <span>🛏️ {imoveisPartida[rodadaAtual - 1].quartos} Qts</span>
                 <span>📐 {imoveisPartida[rodadaAtual - 1].area}m²</span>
-                {imoveisPartida[rodadaAtual - 1].piscina && <span style={{ color: '#0284C7' }}>🏊 Piscina</span>}
+                {imoveisPartida[rodadaAtual - 1].piscina && <span className="text-blue">🏊 Piscina</span>}
               </div>
-              
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <div className="property-tags">
                 {imoveisPartida[rodadaAtual - 1].destaques.map((destaque, idx) => (
-                  <span key={idx} style={{ backgroundColor: '#EFF6FF', color: '#1D4ED8', padding: '6px 12px', borderRadius: '16px', fontSize: '13px', fontWeight: '800' }}>
-                    {destaque}
-                  </span>
+                  <span key={idx} className="tag-pill">{destaque}</span>
                 ))}
               </div>
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div className="btn-grid">
             {imoveisPartida[rodadaAtual - 1].opcoes.map((opcao, index) => (
-              <button 
-                key={index}
-                onClick={() => adivinharValor(opcao)}
-                onMouseEnter={() => setHoveredBtn(index)}
-                onMouseLeave={() => setHoveredBtn(null)}
-                style={{ 
-                  padding: '16px 8px', backgroundColor: hoveredBtn === index ? '#E0F2FE' : '#ffffff', 
-                  color: hoveredBtn === index ? '#0369A1' : '#111827', border: hoveredBtn === index ? '3px solid #38BDF8' : '3px solid #E5E7EB', 
-                  borderRadius: '12px', cursor: 'pointer', fontSize: '20px', fontWeight: '900', transition: 'all 0.1s'
-                }}
-              >
+              <button key={index} onClick={() => adivinharValor(opcao)} className="btn-price">
                 {formatCurrency(opcao)}
               </button>
             ))}
@@ -251,41 +201,36 @@ export default function AvaliacaoStepper() {
         </div>
       )}
 
-      {/* --- PASSO 3: PLACAR FINAL COM TABELA --- */}
+      {/* PASSO 3: PLACAR FINAL COM TABELA RESPONSIVA */}
       {passo === 3 && (
-        <div style={{ animation: 'fadeIn 0.4s' }}>
-          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-            <h2 style={{ fontSize: '32px', color: '#111827', margin: '0 0 8px 0', fontWeight: '900' }}>Fim de Jogo! 🏁</h2>
-            <p style={{ fontSize: '18px', color: '#4B5563', margin: 0, fontWeight: '600' }}>
-              Você acertou <strong style={{ color: '#10B981', fontSize: '22px' }}>{acertosPartida} de 5</strong> avaliações.
+        <div className="step-container slide-in">
+          <div className="text-center margin-bottom-sm">
+            <h2 className="title-text no-margin">Fim de Jogo! 🏁</h2>
+            <p className="subtitle-text text-bold">
+              Você acertou <strong className="text-success">{acertosPartida} de 5</strong> avaliações.
             </p>
           </div>
 
-          {/* Tabela de Resultados Compacta */}
-          <div style={{ overflowX: 'auto', marginBottom: '24px', border: '1px solid #E5E7EB', borderRadius: '12px' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+          <div className="table-wrapper">
+            <table className="result-table">
               <thead>
-                <tr style={{ backgroundColor: '#F9FAFB', borderBottom: '2px solid #E5E7EB', color: '#374151' }}>
-                  <th style={{ padding: '12px', fontWeight: '800' }}>Imóvel</th>
-                  <th style={{ padding: '12px', fontWeight: '800' }}>Seu Chute</th>
-                  <th style={{ padding: '12px', fontWeight: '800' }}>Valor Real</th>
-                  <th style={{ padding: '12px', textAlign: 'center' }}>Res.</th>
+                <tr>
+                  <th>Imóvel</th>
+                  <th>Chute</th>
+                  <th>Real</th>
                 </tr>
               </thead>
               <tbody>
                 {historicoPartida.map((rodada, idx) => (
-                  <tr key={idx} style={{ borderBottom: '1px solid #E5E7EB', backgroundColor: rodada.acertou ? '#F0FDF4' : '#FEF2F2' }}>
-                    <td style={{ padding: '12px', fontWeight: '600', color: '#111827' }}>
-                      {rodada.imovel.tipo} ({rodada.imovel.bairro})
+                  <tr key={idx} className={rodada.acertou ? 'row-success' : 'row-error'}>
+                    <td className="font-bold">
+                      {rodada.imovel.tipo} <br/><span className="text-small">({rodada.imovel.bairro})</span>
                     </td>
-                    <td style={{ padding: '12px', fontWeight: '700', color: rodada.acertou ? '#059669' : '#DC2626' }}>
+                    <td className={rodada.acertou ? 'text-success font-bold' : 'text-error font-bold'}>
                       {formatCurrency(rodada.chute)}
                     </td>
-                    <td style={{ padding: '12px', fontWeight: '600', color: '#4B5563' }}>
+                    <td className="font-bold text-muted">
                       {formatCurrency(rodada.valorReal)}
-                    </td>
-                    <td style={{ padding: '12px', textAlign: 'center', fontSize: '18px' }}>
-                      {rodada.acertou ? '✅' : '❌'}
                     </td>
                   </tr>
                 ))}
@@ -293,27 +238,20 @@ export default function AvaliacaoStepper() {
             </table>
           </div>
 
-          {/* SESSÃO DE AVALIAÇÃO DO JOGO */}
-          <div style={{ padding: '20px', backgroundColor: '#F9FAFB', borderRadius: '16px', border: '1px solid #E5E7EB', textAlign: 'center' }}>
+          <div className="rating-box">
             {jogoAvaliado ? (
-              <div>
-                <h3 style={{ margin: 0, fontSize: '20px', color: '#10B981', fontWeight: '900' }}>Obrigado! 💖</h3>
-              </div>
+              <h3 className="text-success no-margin font-bold">Obrigado! 💖</h3>
             ) : (
               <>
-                <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', color: '#111827', fontWeight: '800' }}>Avalie este joguinho:</h3>
-                <div style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
+                <h3 className="rating-title">Avalie este joguinho:</h3>
+                <div className="stars-container">
                   {[1, 2, 3, 4, 5].map((estrela) => (
                     <span 
                       key={estrela}
                       onClick={() => setJogoAvaliado(true)}
                       onMouseEnter={() => setHoveredStar(estrela)}
                       onMouseLeave={() => setHoveredStar(0)}
-                      style={{ 
-                        fontSize: '36px', cursor: 'pointer',
-                        color: (hoveredStar >= estrela || rating >= estrela) ? '#F59E0B' : '#D1D5DB',
-                        transition: 'transform 0.1s', transform: hoveredStar === estrela ? 'scale(1.2)' : 'scale(1)'
-                      }}
+                      className={`star ${(hoveredStar >= estrela || rating >= estrela) ? 'active' : ''}`}
                     >
                       ★
                     </span>
@@ -323,22 +261,150 @@ export default function AvaliacaoStepper() {
             )}
           </div>
 
-          <button 
-            onClick={() => setPasso(1)} 
-            style={{ 
-              width: '100%', marginTop: '20px', padding: '18px', backgroundColor: '#3B82F6', 
-              color: 'white', border: 'none', borderRadius: '12px', fontWeight: '900', fontSize: '20px', cursor: 'pointer'
-            }}
-          >
+          <button onClick={() => setPasso(1)} className="btn-primary margin-top-sm">
             Jogar Nova Partida 🔄
           </button>
         </div>
       )}
 
+      {/* --- ESTILOS CSS COM MEDIA QUERIES (Responsividade) --- */}
       <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+        /* VARIÁVEIS E BASE */
+        .domus-game-wrapper {
+          max-width: 600px;
+          margin: 10px auto;
+          padding: 24px;
+          font-family: 'Inter', 'Segoe UI', sans-serif;
+          background-color: #ffffff;
+          border-radius: 20px;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+          border: 1px solid #E5E7EB;
+          box-sizing: border-box;
+          width: 100%;
+        }
+        
+        .step-container { display: flex; flex-direction: column; height: 100%; }
+        .text-center { text-align: center; }
+        .no-margin { margin: 0; }
+        .margin-bottom-sm { margin-bottom: 12px; }
+        .margin-top-sm { margin-top: 16px; }
+        .font-bold { font-weight: 800; }
+        .text-success { color: #10B981; }
+        .text-error { color: #DC2626; }
+        .text-blue { color: #0284C7; }
+        .text-muted { color: #4B5563; }
+        .text-small { font-size: 12px; font-weight: 500; }
+
+        /* TIPOGRAFIA */
+        .icon-large { font-size: 48px; margin-bottom: 10px; text-align: center; }
+        .title-text { color: #111827; font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+        .subtitle-text { color: #4B5563; font-size: 16px; margin-bottom: 24px; }
+        .question-text { text-align: center; color: #111827; margin: 0 0 12px 0; font-size: 22px; font-weight: 900; }
+
+        /* FORMS E BOTOES */
+        .input-field {
+          padding: 14px; width: 100%; box-sizing: border-box; border-radius: 12px; 
+          border: 2px solid #D1D5DB; font-size: 18px; font-weight: bold; text-align: center; 
+          margin-bottom: 20px; outline: none; transition: all 0.2s;
+        }
+        .input-field:focus { border-color: #3B82F6; }
+        
+        .btn-primary, .btn-success {
+          width: 100%; padding: 16px; color: white; border: none; 
+          border-radius: 12px; font-weight: 900; cursor: pointer; font-size: 18px; transition: transform 0.1s;
+        }
+        .btn-primary { background-color: #3B82F6; }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-success { background-color: #10B981; }
+        .btn-success:active { transform: scale(0.98); }
+
+        /* LAYOUT LOBBY */
+        .header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .badge-info { background-color: #F3F4F6; padding: 6px 12px; border-radius: 20px; font-weight: 700; color: #4B5563; font-size: 14px; }
+        .filter-box { background-color: #F9FAFB; padding: 16px; border-radius: 16px; border: 1px solid #E5E7EB; margin-bottom: 16px; }
+        .grid-2-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .input-group label { display: block; font-size: 14px; font-weight: 700; color: #4B5563; margin-bottom: 6px; }
+        .input-group select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #D1D5DB; font-size: 15px; font-weight: 600; outline: none; }
+
+        /* RODADA */
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: center; font-weight: 800; font-size: 14px; color: #4B5563; }
+        .progress-bar-bg { width: 100%; height: 8px; background-color: #E5E7EB; border-radius: 4px; margin-bottom: 12px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background-color: #3B82F6; transition: width 0.3s; }
+        
+        .property-card { border-radius: 12px; overflow: hidden; border: 2px solid #F3F4F6; margin-bottom: 16px; }
+        .property-image { height: 180px; background-size: cover; background-position: center; position: relative; }
+        .property-badge { position: absolute; top: 10px; left: 10px; background-color: rgba(255,255,255,0.95); padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 12px; color: #111827; }
+        .property-details { padding: 12px; background-color: #ffffff; }
+        .property-details h3 { margin: 0 0 8px 0; color: #111827; font-size: 18px; font-weight: 900; }
+        .property-specs { display: flex; gap: 10px; color: #374151; font-size: 13px; margin-bottom: 8px; font-weight: 700; flex-wrap: wrap; }
+        .property-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+        .tag-pill { background-color: #EFF6FF; color: #1D4ED8; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 800; }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-price { 
+          padding: 14px 6px; background-color: #ffffff; color: #111827; border: 2px solid #E5E7EB; 
+          border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: 900; transition: all 0.1s; 
+        }
+        .btn-price:hover { background-color: #E0F2FE; color: #0369A1; border-color: #38BDF8; }
+
+        /* TABELA E AVALIAÇÃO */
+        .table-wrapper { border: 1px solid #E5E7EB; border-radius: 10px; overflow: hidden; margin-bottom: 16px; }
+        .result-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        .result-table th { background-color: #F9FAFB; padding: 10px; font-weight: 800; border-bottom: 2px solid #E5E7EB; color: #374151; }
+        .result-table td { padding: 10px; border-bottom: 1px solid #E5E7EB; }
+        .row-success { background-color: #F0FDF4; }
+        .row-error { background-color: #FEF2F2; }
+
+        .rating-box { padding: 16px; background-color: #F9FAFB; border-radius: 12px; border: 1px solid #E5E7EB; text-align: center; }
+        .rating-title { margin: 0 0 8px 0; font-size: 16px; color: #111827; font-weight: 800; }
+        .stars-container { display: flex; justify-content: center; gap: 6px; }
+        .star { font-size: 32px; cursor: pointer; color: #D1D5DB; transition: transform 0.1s; }
+        .star.active { color: #F59E0B; }
+        .star:active { transform: scale(1.2); }
+
+        /* ANIMAÇÕES */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .fade-in { animation: fadeIn 0.2s ease-in; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .slide-in { animation: slideIn 0.3s ease-out; }
+
+        /* === MEDIA QUERIES PARA CELULAR (Responsividade Extrema) === */
+        @media (max-width: 500px) {
+          .domus-game-wrapper { padding: 16px; margin: 0; border-radius: 0; border: none; box-shadow: none; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+          
+          /* Encolhendo textos para caber sem rolar */
+          .icon-large { font-size: 36px; margin-bottom: 4px; }
+          .title-text { font-size: 22px; margin-bottom: 4px; }
+          .subtitle-text { font-size: 14px; margin-bottom: 16px; }
+          .question-text { font-size: 18px; margin-bottom: 8px; }
+          
+          /* Ajuste Forms */
+          .input-field { padding: 12px; font-size: 16px; margin-bottom: 16px; }
+          .btn-primary, .btn-success { padding: 14px; font-size: 16px; }
+          
+          /* Lobby Mobile */
+          .header-flex { flex-direction: column; gap: 8px; align-items: flex-start; }
+          .grid-2-cols { grid-template-columns: 1fr; gap: 8px; }
+          .input-group select { padding: 10px; font-size: 14px; }
+          .filter-box { padding: 12px; margin-bottom: 12px; }
+          
+          /* Rodada Mobile */
+          .property-card { margin-bottom: 10px; border-width: 1px; }
+          .property-image { height: 130px; } /* Foto menor no celular */
+          .property-details { padding: 10px; }
+          .property-details h3 { font-size: 16px; margin-bottom: 6px; }
+          .property-specs { font-size: 12px; margin-bottom: 6px; gap: 8px; }
+          .tag-pill { font-size: 10px; padding: 4px 8px; }
+          
+          /* Botões de Preço Mobile */
+          .btn-grid { gap: 8px; }
+          .btn-price { padding: 10px 4px; font-size: 14px; border-width: 2px; }
+
+          /* Tabela Mobile */
+          .result-table th, .result-table td { padding: 8px 6px; font-size: 12px; }
+          .table-wrapper { margin-bottom: 12px; }
+          .rating-box { padding: 12px; }
+          .star { font-size: 28px; }
         }
       `}</style>
     </div>
