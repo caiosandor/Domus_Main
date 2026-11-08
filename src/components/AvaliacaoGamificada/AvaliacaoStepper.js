@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
-// --- DADOS MOCKADOS (Imagens fiéis às descrições) ---
+// --- DADOS MOCKADOS (Links de imagens corrigidos e 100% estáveis) ---
 const imoveisMock = [
-  { id: 1, bairro: 'Ponta Negra', tipo: 'Casa de Luxo', quartos: 5, piscina: true, area: 350, imagem: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80', valorReal: 1100000, opcoes: [950000, 1100000, 1250000, 1500000], destaques: ['Vista para o Mar 🌊', 'Acabamento Premium', 'Design Moderno'] },
-  { id: 2, bairro: 'Itaipuaçu', tipo: 'Casa', quartos: 3, piscina: true, area: 180, imagem: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', valorReal: 650000, opcoes: [550000, 650000, 750000, 850000], destaques: ['Área Gourmet 🥩', 'Aceita Pet 🐕', 'Quintal Amplo'] },
-  { id: 3, bairro: 'Centro', tipo: 'Apartamento', quartos: 2, piscina: false, area: 75, imagem: 'https://images.unsplash.com/photo-1502672260266-1c1c24240f57?auto=format&fit=crop&w=800&q=80', valorReal: 320000, opcoes: [250000, 280000, 320000, 380000], destaques: ['Varanda Envidraçada', 'Vaga Coberta 🚗', 'Proibido som alto 🔇'] },
-  { id: 4, bairro: 'Inoã', tipo: 'Duplex', quartos: 3, piscina: false, area: 130, imagem: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=800&q=80', valorReal: 480000, opcoes: [400000, 480000, 520000, 600000], destaques: ['Condomínio Fechado', 'Segurança 24h 🛡️', 'Parquinho'] },
-  { id: 5, bairro: 'Cordeirinho', tipo: 'Casa', quartos: 2, piscina: true, area: 110, imagem: 'https://images.unsplash.com/photo-1556912172-45b7ee8819d6?auto=format&fit=crop&w=800&q=80', valorReal: 420000, opcoes: [350000, 420000, 480000, 550000], destaques: ['Cozinha Americana 🍳', 'Conceito Aberto'] },
+  { id: 1, bairro: 'Ponta Negra', tipo: 'Casa de Luxo', quartos: 5, piscina: true, area: 350, imagem: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80', valorReal: 1100000, opcoes: [950000, 1100000, 1250000, 1500000], destaques: ['Vista para o Mar 🌊', 'Acabamento Premium', 'Design Moderno'] },
+  { id: 2, bairro: 'Itaipuaçu', tipo: 'Casa', quartos: 3, piscina: true, area: 180, imagem: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80', valorReal: 650000, opcoes: [550000, 650000, 750000, 850000], destaques: ['Área Gourmet 🥩', 'Aceita Pet 🐕', 'Quintal Amplo'] },
+  { id: 3, bairro: 'Centro', tipo: 'Apartamento', quartos: 2, piscina: false, area: 75, imagem: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80', valorReal: 320000, opcoes: [250000, 280000, 320000, 380000], destaques: ['Varanda Envidraçada', 'Vaga Coberta 🚗', 'Proibido som alto 🔇'] },
+  { id: 4, bairro: 'Inoã', tipo: 'Duplex', quartos: 3, piscina: false, area: 130, imagem: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80', valorReal: 480000, opcoes: [400000, 480000, 520000, 600000], destaques: ['Condomínio Fechado', 'Segurança 24h 🛡️', 'Parquinho'] },
+  { id: 5, bairro: 'Cordeirinho', tipo: 'Casa', quartos: 2, piscina: true, area: 110, imagem: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=800&q=80', valorReal: 420000, opcoes: [350000, 420000, 480000, 550000], destaques: ['Cozinha Americana 🍳', 'Conceito Aberto'] },
   { id: 6, bairro: 'Itaipuaçu', tipo: 'Duplex', quartos: 4, piscina: true, area: 160, imagem: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=800&q=80', valorReal: 720000, opcoes: [620000, 720000, 820000, 900000], destaques: ['Móveis Planejados', 'Fino Acabamento ✨', 'Rua Asfaltada'] },
   { id: 7, bairro: 'Centro', tipo: 'Apartamento', quartos: 3, piscina: true, area: 95, imagem: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=800&q=80', valorReal: 450000, opcoes: [380000, 450000, 520000, 600000], destaques: ['Condomínio Clube 🎾', 'Andar Alto', 'Sol da Manhã ☀️'] },
-  { id: 8, bairro: 'São José', tipo: 'Casa', quartos: 2, piscina: false, area: 85, imagem: 'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=800&q=80', valorReal: 350000, opcoes: [280000, 350000, 410000, 480000], destaques: ['Ideal para Casal 👩‍❤️‍👨', 'Jardim de Inverno', 'Aceita Pet 🐈'] }
+  { id: 8, bairro: 'São José', tipo: 'Casa', quartos: 2, piscina: false, area: 85, imagem: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?auto=format&fit=crop&w=800&q=80', valorReal: 350000, opcoes: [280000, 350000, 410000, 480000], destaques: ['Ideal para Casal 👩‍❤️‍👨', 'Jardim de Inverno', 'Aceita Pet 🐈'] }
 ];
 
 export default function AvaliacaoStepper() {
@@ -267,7 +267,7 @@ export default function AvaliacaoStepper() {
         </div>
       )}
 
-      {/* --- ESTILOS CSS COM MEDIA QUERIES (Responsividade) --- */}
+      {/* --- ESTILOS CSS COM MEDIA QUERIES E FALLBACK --- */}
       <style>{`
         /* VARIÁVEIS E BASE */
         .domus-game-wrapper {
@@ -332,7 +332,10 @@ export default function AvaliacaoStepper() {
         .progress-bar-fill { height: 100%; background-color: #3B82F6; transition: width 0.3s; }
         
         .property-card { border-radius: 12px; overflow: hidden; border: 2px solid #F3F4F6; margin-bottom: 16px; }
-        .property-image { height: 180px; background-size: cover; background-position: center; position: relative; }
+        
+        /* ADICIONADO BACKGROUND-COLOR COMO FALLBACK PARA CASO A IMAGEM DEMORE A CARREGAR */
+        .property-image { height: 180px; background-size: cover; background-position: center; position: relative; background-color: #E5E7EB; }
+        
         .property-badge { position: absolute; top: 10px; left: 10px; background-color: rgba(255,255,255,0.95); padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 12px; color: #111827; }
         .property-details { padding: 12px; background-color: #ffffff; }
         .property-details h3 { margin: 0 0 8px 0; color: #111827; font-size: 18px; font-weight: 900; }
